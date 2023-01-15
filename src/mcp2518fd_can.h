@@ -143,13 +143,14 @@ class mcp2518fd : public MCP_CAN_1 {
     virtual byte readMsgBufID(byte status, volatile unsigned long *id,
     volatile byte *ext, volatile byte *rtr,
     volatile byte *len,
-    volatile byte *buf); // read buf with object ID
+    volatile byte *buf,
+    volatile byte buflen = MAX_DATA_BYTES); // read buf with object ID
     /* wrapper */
-    byte readMsgBufID(unsigned long *ID, byte *len, byte *buf) {
-        return readMsgBufID(readRxTxStatus(), ID, &ext_flg, &rtr, len, buf);
+    byte readMsgBufID(unsigned long *ID, byte *len, byte *buf, byte buflen = MAX_DATA_BYTES) {
+        return readMsgBufID(readRxTxStatus(), ID, &ext_flg, &rtr, len, buf, buflen);
     }
-    byte readMsgBuf(byte *len, byte *buf) {
-        return readMsgBufID(readRxTxStatus(), &can_id, &ext_flg, &rtr, len, buf);
+    byte readMsgBuf(byte *len, byte *buf, byte buflen = MAX_DATA_BYTES) {
+        return readMsgBufID(readRxTxStatus(), &can_id, &ext_flg, &rtr, len, buf, buflen);
     }
 
   /* ---- sending ---- */
@@ -183,7 +184,7 @@ class mcp2518fd : public MCP_CAN_1 {
     virtual byte mcpDigitalRead(const byte pin);
 
     private:
-    byte mcp2518fd_readMsgBufID(volatile byte *len, volatile byte *buf);
+    byte mcp2518fd_readMsgBufID(volatile byte *len, volatile byte *buf, volatile byte buflen);
     byte mcp2518fd_sendMsg(const byte *buf, byte len, unsigned long id, byte ext,
     byte rtr, bool wait_sent);
     int8_t mcp2518fd_receiveMsg();

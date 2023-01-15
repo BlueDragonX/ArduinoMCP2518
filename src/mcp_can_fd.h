@@ -74,10 +74,10 @@ public:
     virtual byte checkReceive(void) = 0;                                                // if something received
     virtual byte readMsgBufID(byte status,
                               volatile unsigned long *id, volatile byte *ext, volatile byte *rtr,
-                              volatile byte *len, volatile byte *buf) = 0;              // read buf with object ID
+                              volatile byte *len, volatile byte *buf, volatile byte buflen) = 0;              // read buf with object ID
     /* wrapper */
-    virtual byte readMsgBufID(unsigned long *ID, byte *len, byte *buf) = 0;
-    virtual byte readMsgBuf(byte *len, byte *buf) = 0;
+    virtual byte readMsgBufID(unsigned long *ID, byte *len, byte *buf, byte buflen) = 0;
+    virtual byte readMsgBuf(byte *len, byte *buf, byte buflen) = 0;
     
     /* could be called after a successful readMsgBufID() */
     unsigned long getCanId(void) { return can_id; }

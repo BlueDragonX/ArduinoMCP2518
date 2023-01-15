@@ -25,9 +25,6 @@ static uint8_t txd[MAX_DATA_BYTES];
 // Receive Channels
 #define APP_RX_FIFO CAN_FIFO_CH1
 
-// Maximum number of data bytes in message
-#define MAX_DATA_BYTES 64
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Variables
@@ -2062,9 +2059,10 @@ byte mcp2518fd::__setMode(const byte opMode) {
 *********************************************************************************************************/
 byte mcp2518fd::readMsgBufID(byte status, volatile unsigned long *id,
 volatile byte *ext, volatile byte *rtr,
-volatile byte *len, volatile byte *buf) {
+volatile byte *len, volatile byte *buf,
+volatile byte buflen) {
 
-    byte r = mcp2518fd_readMsgBufID(len, buf);
+    byte r = mcp2518fd_readMsgBufID(len, buf, buflen);
     if (id)
     *id  = can_id;
     if (ext)
@@ -2106,7 +2104,7 @@ byte mcp2518fd::checkError(uint8_t* err_ptr) {
 // to status.
 // **                          Status has to be read with readRxTxStatus.
 // *********************************************************************************************************/
-byte mcp2518fd::mcp2518fd_readMsgBufID(volatile byte *len, volatile byte *buf) {
+byte mcp2518fd::mcp2518fd_readMsgBufID(volatile byte *len, volatile byte *buf, volatile byte buflen) {
     mcp2518fd_ReceiveMessageGet(APP_RX_FIFO, &rxObj, rxd, MAX_DATA_BYTES);
     ext_flg = rxObj.bF.ctrl.IDE;
     //can_id = ext_flg? (rxObj.bF.id.EID | (rxObj.bF.id.SID << 18))
@@ -2114,11 +2112,15 @@ byte mcp2518fd::mcp2518fd_readMsgBufID(volatile byte *len, volatile byte *buf) {
     //:  rxObj.bF.id.SID;
     rtr = rxObj.bF.ctrl.RTR;
     uint8_t n = DRV_CANFDSPI_DlcToDataBytes((CAN_DLC)rxObj.bF.ctrl.DLC);
-    if (len) {
-        *len = n;
+    if (n < buflen) {
+        buflen = n;
     }
 
-    for (int i = 0; i < n; i++) {
+    if (len) {
+        *len = buflen;
+    }
+
+    for (int i = 0; i < buflen; i++) {
         buf[i] = rxd[i];
     }
 
