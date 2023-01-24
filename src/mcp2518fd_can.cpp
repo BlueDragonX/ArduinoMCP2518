@@ -1847,14 +1847,14 @@ uint8_t mcp2518fd::mcp2518fd_init(uint32_t speedset, const byte clock) {
 
     // Setup TX FIFO
     mcp2518fd_TransmitChannelConfigureObjectReset(&txConfig);
-    txConfig.FifoSize = 7;
+    txConfig.FifoSize = 2;
     txConfig.PayLoadSize = CAN_PLSIZE_64;
     txConfig.TxPriority = 1;
     mcp2518fd_TransmitChannelConfigure(APP_TX_FIFO, &txConfig);
 
     // Setup RX FIFO
     mcp2518fd_ReceiveChannelConfigureObjectReset(&rxConfig);
-    rxConfig.FifoSize = 15;
+    rxConfig.FifoSize = 20;
     rxConfig.PayLoadSize = CAN_PLSIZE_64;
     mcp2518fd_ReceiveChannelConfigure(APP_RX_FIFO, &rxConfig);
 
